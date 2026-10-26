@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CTH Trade Finance - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background-color: #1e293b; color: white; }
+        .sidebar a { color: #94a3b8; text-decoration: none; display: block; padding: 12px 20px; border-radius: 6px; margin-bottom: 4px; }
+        .sidebar a:hover, .sidebar a.active { background-color: #334155; color: white; }
+        .stat-card { border-radius: 10px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar p-3">
+            <h4 class="text-white fw-bold mb-4 ps-2"><i class="bi bi-cpu"></i> CTH Finance</h4>
+            <a href="/" class="active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a href="/decompiler"><i class="bi bi-file-earmark-code me-2"></i> JAR Decompiler</a>
+            <a href="/profitability"><i class="bi bi-graph-up-arrow me-2"></i> Profitability</a>
+            <a href="/reports"><i class="bi bi-table me-2"></i> Custom Reports</a>
+            <a href="/users"><i class="bi bi-people me-2"></i> Users & Config</a>
+            <a href="/swagger-ui.html" target="_blank"><i class="bi bi-journal-code me-2"></i> Swagger UI</a>
+            <hr class="text-secondary my-4">
+            <a href="/logout" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold" th:text="${appTitle}">CTH Trade Finance Engine</h2>
+                    <p class="text-muted">Real-time Operations & Finastra TI Plus Profitability Monitoring</p>
+                </div>
+                <span class="badge bg-success fs-6 py-2 px-3"><i class="bi bi-check-circle-fill me-1"></i> System Operational</span>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card p-3 bg-white">
+                        <div class="text-muted fs-7">Processed Transactions</div>
+                        <h2 class="fw-bold my-2 text-primary" id="metric-tx" th:text="${metrics.totalTransactions}">0</h2>
+                        <span class="text-success fs-7"><i class="bi bi-arrow-up"></i> Live count</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-3 bg-white">
+                        <div class="text-muted fs-7">Total Profitability</div>
+                        <h2 class="fw-bold my-2 text-success" id="metric-profit" th:text="${'$' + metrics.totalProfitability}">$0.00</h2>
+                        <span class="text-muted fs-7">Finastra TI Plus</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-3 bg-white">
+                        <div class="text-muted fs-7">Decompiled JARs</div>
+                        <h2 class="fw-bold my-2 text-info" id="metric-decompiles" th:text="${metrics.totalDecompiles}">0</h2>
+                        <span class="text-muted fs-7">CFR Engine</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-3 bg-white">
+                        <div class="text-muted fs-7">JVM Heap Usage</div>
+                        <h2 class="fw-bold my-2 text-warning" id="metric-memory" th:text="${metrics.memoryUsedMb + ' MB / ' + metrics.memoryMaxMb + ' MB'}">0 MB</h2>
+                        <span class="text-muted fs-7">Max 8GB allocated</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stat-card p-4 bg-white mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i> Quick Actions</h5>
+                <div class="d-flex gap-3">
+                    <a href="/decompiler" class="btn btn-primary px-4"><i class="bi bi-upload me-1"></i> Decompile New JAR</a>
+                    <a href="/profitability" class="btn btn-outline-primary px-4"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Process Trade CSVs</a>
+                    <a href="/reports" class="btn btn-outline-secondary px-4"><i class="bi bi-funnel me-1"></i> Build Custom Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

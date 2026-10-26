@@ -1,0 +1,3 @@
+@echo off
+echo Starting CTH Trade Finance System (Windows) with 8GB Maximum Memory Settings...
+java -Xms4g -Xmx8g -jar target/cth-trade-finance-1.0.0-SNAPSHOT.jar

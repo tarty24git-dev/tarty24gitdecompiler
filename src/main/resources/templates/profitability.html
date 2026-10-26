@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profitability Analysis - CTH Trade Finance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background-color: #1e293b; color: white; }
+        .sidebar a { color: #94a3b8; text-decoration: none; display: block; padding: 12px 20px; border-radius: 6px; margin-bottom: 4px; }
+        .sidebar a:hover, .sidebar a.active { background-color: #334155; color: white; }
+        .card-custom { border-radius: 10px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar p-3">
+            <h4 class="text-white fw-bold mb-4 ps-2"><i class="bi bi-cpu"></i> CTH Finance</h4>
+            <a href="/"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a href="/decompiler"><i class="bi bi-file-earmark-code me-2"></i> JAR Decompiler</a>
+            <a href="/profitability" class="active"><i class="bi bi-graph-up-arrow me-2"></i> Profitability</a>
+            <a href="/reports"><i class="bi bi-table me-2"></i> Custom Reports</a>
+            <a href="/users"><i class="bi bi-people me-2"></i> Users & Config</a>
+            <a href="/swagger-ui.html" target="_blank"><i class="bi bi-journal-code me-2"></i> Swagger UI</a>
+            <hr class="text-secondary my-4">
+            <a href="/logout" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+            <h2 class="fw-bold mb-4">Finastra TI Plus Trade Profitability Analysis</h2>
+
+            <!-- CSV Ingestion Card -->
+            <div class="card card-custom p-4 bg-white mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-spreadsheet text-success me-2"></i> Ingest & Process Trade CSVs</h5>
+                <form id="profitForm" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Sending System Input CSV (Transactions)</label>
+                            <input type="file" name="inputFile" class="form-control" accept=".csv" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Sending System Output CSV (Response / Status)</label>
+                            <input type="file" name="responseFile" class="form-control" accept=".csv">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-calculator me-1"></i> Calculate Profitability</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="profitStatus" class="mt-3"></div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="card card-custom p-4 bg-white mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-list-check me-2"></i> Processed Trade Transactions</h5>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ref Number</th>
+                            <th>Customer ID</th>
+                            <th>Product Type</th>
+                            <th>Currency</th>
+                            <th>Amount</th>
+                            <th>Fee Amount</th>
+                            <th>Margin %</th>
+                            <th>Net Profitability</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="txTableBody">
+                        <tr th:each="tx : ${transactions}">
+                            <td class="fw-bold" th:text="${tx.refNumber}">TF1001</td>
+                            <td th:text="${tx.customerId}">CUST1</td>
+                            <td th:text="${tx.productType}">Letter of Credit</td>
+                            <td th:text="${tx.currency}">USD</td>
+                            <td th:text="${tx.amount}">$100,000</td>
+                            <td th:text="${tx.feeAmount}">$500</td>
+                            <td th:text="${tx.marginPct}">1.25%</td>
+                            <td class="fw-bold text-success" th:text="${'$' + tx.calculatedProfit}">$1,750</td>
+                            <td><span class="badge bg-success" th:text="${tx.status}">SUCCESS</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('profitForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const statusDiv = document.getElementById('profitStatus');
+        statusDiv.innerHTML = '<div class="alert alert-info">Processing CSV transactions and computing margins...</div>';
+
+        fetch('/api/profitability/process', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="alert alert-success">Processed ${data.totalRecords} records! Total Net Profitability: $${data.totalProfitability}</div>`;
+                    setTimeout(() => location.reload(), 1500);
+                }
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+            });
+    });
+</script>
+</body>
+</html>

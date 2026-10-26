@@ -1,0 +1,9 @@
+target/
+decompiled_sources/
+*.log
+*.class
+.idea/
+*.eclipse
+*.settings/
+.classpath
+.project
